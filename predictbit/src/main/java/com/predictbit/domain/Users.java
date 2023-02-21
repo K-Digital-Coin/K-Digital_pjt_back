@@ -9,11 +9,11 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class User {
+public class Users {
     @Id
     private String id;
-    private String password;
+    private String pw;
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role _role;
     private boolean enabled;
 }
