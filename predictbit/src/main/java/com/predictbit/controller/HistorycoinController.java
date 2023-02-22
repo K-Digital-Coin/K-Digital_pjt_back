@@ -17,18 +17,26 @@ public class HistorycoinController {
 
     public HistorycoinController(HistorycoinService hcs) {
         this.hcs = hcs;
-        log.info("Called HistoryCoinController");
+        log.info("Called HistorycoinController");
     }
 
     @Autowired
     public void setHistoryCoinService(HistorycoinService hcs) {
         this.hcs = hcs;
-        log.info("HistoryCoinController called setHistoryCoinService()");
+        log.info("HistorycoinController called setHistoryCoinService()");
     }
 
-    @GetMapping("/historycoin")
-    public List<Historycoin> getHistoryCoin() {
-        log.info("HistoryCoinController called getHistoryCoin()");
-        return hcs.getHistoryCoin();
+    @GetMapping("/api/historycoin")
+    public List<Historycoin> getHistorycoin() {
+        log.info("HistorycoinController called getHistoryCoin()");
+        return hcs.getHistorycoin();
     }
+
+    @GetMapping("/api/updatecoin")
+    public void updateHistorycoin() {
+        log.info("HistorycoinController called updateHistorycoin()");
+        hcs.updateHistorycoin();
+//        return hcs.updateHistorycoin();
+    }
+
 }
