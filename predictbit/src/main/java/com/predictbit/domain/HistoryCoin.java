@@ -2,14 +2,16 @@ package com.predictbit.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
 
 import java.sql.Timestamp;
 
 @Entity
+@Table(name = "historycoin")
 @Getter @Setter @ToString
 @NoArgsConstructor @AllArgsConstructor
-public class Historycoin {
+public class HistoryCoin {
     @Id
     private int idx;
     private double opening_price;
