@@ -1,4 +1,4 @@
-package com.predictbit.chartdata.domain;
+package com.predictbit.chartdata_ws.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.sql.Timestamp;
 
+@Data                                   // 웹소켓으로 전달할 내용을 담음
 @Entity
 @Table(name = "historycoin")
 @Getter @Setter @ToString
