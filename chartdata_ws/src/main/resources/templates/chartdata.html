@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>WebSocket Test</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            let socket;
+            $("#start").on("click", () => {
+                start();
+            })
+            $("#stop").on("click", () => {
+                stop();
+            })
+
+            function start() {
+                socket = new WebSocket("ws://localhost:8080/ws/chartdata");
+                socket.onopen = function () {
+                    console.log("WebSocket opened.");
+                }
+                socket.onmessage = onMessage;
+            }
+
+            function stop() {
+                socket.close();
+            }
+
+            function onMessage(msg) {
+                let data = msg.data;
+                console.log(data);
+                let str = "<div><b>" + data + "</b></div>";
+                $("#msgArea").append(str);
+            }
+        })
+    </script>
+</head>
+<body>
+    <button type="button" id="start">시작</button>
+    <button type="button" id="stop">종료</button>
+    <div id="msgArea" class="col"></div>
+</body>
+</html>
