@@ -24,8 +24,9 @@ public class ChartUpdateService {
     public ChartUpdateService(ChartDataRepository chartDataRepo) {
         this.chartDataRepo = chartDataRepo;
     }
+
     private static Set<Session> clients
-            = Collections.synchronizedSet(new HashSet<Session>());
+            = Collections.synchronizedSet(new HashSet<>());
 
     public HistoryCoin getHistoryCoinByIdx(int idx) {
         return chartDataRepo.findById(idx)

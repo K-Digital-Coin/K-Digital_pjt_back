@@ -26,20 +26,25 @@ public class ChartDataWebSocketHandler extends TextWebSocketHandler {
         this.chartDataService = chartDataService;
     }
 
+    // WebSocketSession을 담아둘 리스트 생성
     private static List<WebSocketSession> list = new ArrayList<>();
+    // 데이터 범위를 지정할 startIdx와 endIdx 초기값 설정
     private int startIdx = 19851;
     private int endIdx = 19952;
 
-    @Scheduled(fixedDelay = 100)
-    // 1초마다 idx 100씩 감소시키면서 데이터를 보내줍니다.
+    @Scheduled(fixedDelay = 1000) // fixedDelay를 이용해 일정 시간마다 스케줄링
     public void scheduledProcessing() {
+        // list에 WebSocketSession이 없으면 작업 중지
         if (list.size() == 0) return;
         try {
+            // ChartDataService의 getHistoryCoinByIdxBetween 메서드를 호출해 startIdx와 endIdx 범위의 데이터를 가져옴
             List<HistoryCoin> historyCoins = chartDataService.getHistoryCoinByIdxBetween(startIdx, endIdx);
+            // 가져온 데이터를 문자열로 변환
             String msg = historyCoins.toString();
-
+            // 문자열을 WebSocketSession에 전달하기 위해 TextMessage 객체 생성
             TextMessage message = new TextMessage(msg.getBytes());
 
+            // WebSocketSession 리스트를 순회하며 메시지 전송
             for (WebSocketSession sess : list) {
                 try {
                     sess.sendMessage(message);
@@ -48,12 +53,11 @@ public class ChartDataWebSocketHandler extends TextWebSocketHandler {
                     sess.close();
                 }
             }
-            System.out.println("startIdx: " + startIdx + " / endIdx: " + endIdx);
+            // startIdx와 endIdx 범위 업데이트
             endIdx = startIdx-1;
             if (startIdx < 0) {
                 startIdx = 0;
             } else if (startIdx == 0) {
-                startIdx = 0;
                 endIdx = 0;
             } else {
                 startIdx = startIdx-100;
@@ -63,22 +67,22 @@ public class ChartDataWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    @Override
+    @Override // 클라이언트에서 메시지를 보냈을 때 호출됨
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        // WebSocketSession 리스트를 순회하며 메시지 전송
         for(WebSocketSession sess: list) {
             sess.sendMessage(message);
         }
     }
 
-    @Override
-    // Client 접속 시 호출
+    @Override // WebSocketSession이 열리면 호출됨
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        // WebSocketSession 리스트에 추가
         list.add(session);
         System.out.println(session + " 클라이언트 접속");
     }
 
-    @Override
-    // Client 접속 해제 시 호출
+    @Override // WebSocketSession이 닫히면 호출됨
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         System.out.println(session + " 클라이언트 접속 해제");
         list.remove(session);

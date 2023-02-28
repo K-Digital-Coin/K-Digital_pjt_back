@@ -8,16 +8,15 @@
     <script th:inline="javascript">
         $(document).ready(function () {
             let socket;
-            $("#start").on("click", (e) => {
+            $("#start").on("click", () => {
                 start();
             })
-            $("#stop").on("click", (e) => {
+            $("#stop").on("click", () => {
                 stop();
             })
 
             function start() {
                 socket = new WebSocket("ws://localhost:8080/ws/chartupdate");
-                console.log("aaa")
                 socket.onopen = function () {
                     console.log("WebSocket opened.");
                 }

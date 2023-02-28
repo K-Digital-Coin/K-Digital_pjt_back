@@ -1,8 +1,5 @@
 package com.predictbit.chartdata_ws.service;
 
-import com.predictbit.chartdata_ws.domain.HistoryCoin;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -15,29 +12,44 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 @Component
-@RequiredArgsConstructor
 public class ChartUpdateWebSocketHandler extends TextWebSocketHandler {
 
-    @Autowired
     private final ChartUpdateService chartUpdateService;
+
+    @Autowired
+    public ChartUpdateWebSocketHandler(ChartUpdateService chartUpdateService) {
+        this.chartUpdateService = chartUpdateService;
+    }
+
+    // 세션 리스트
     private static List<WebSocketSession> list = new ArrayList<>();
-    private long idx = 0L;
+
+    // idx, currentIdx 초기값 설정
     private int currentIdx = 19952;
 
-    @Scheduled(fixedDelay = 1000)
-    // 10초마다 idx 1씩 증가시키면서 데이터를 보내줍니다.
+    @Scheduled(fixedDelay = 10000)
+    // 10초마다 currentIdx를 증가시키면서 데이터를 보내줍니다.
     public void scheduledProcessing() throws IOException {
-        if (list.size() == 0) return;
-        currentIdx++;
+        String msg;
 
-        HistoryCoin historyCoin = chartUpdateService.getHistoryCoinByIdx(currentIdx);
-        String msg = historyCoin.toString();
-        log.info("msg : " + msg);
+        // 클라이언트가 없으면 return
+        if (list.size() == 0) return;
+
+        if (currentIdx < 20000 & currentIdx > 0) {
+            currentIdx++;
+            msg = chartUpdateService.getHistoryCoinByIdx(currentIdx).toString();
+        } else {
+            // 데이터가 끝까지 갔으면 currentIdx를 초기화
+            currentIdx = 0;
+            msg = "";
+        }
+
+        System.out.println("msg : " + msg);
 
         TextMessage message = new TextMessage(msg.getBytes());
 
+        // 세션 리스트에 있는 모든 클라이언트에게 메시지 전송
         for (WebSocketSession sess : list) {
             sess.sendMessage(message);
         }
@@ -50,17 +62,17 @@ public class ChartUpdateWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    @Override
-    // Client 접속 시 호출
+    @Override    // Client 접속 시 호출
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        // 세션 리스트에 세션 추가
         list.add(session);
-        log.info(session + " 클라이언트 접속");
+        System.out.println(session + " 클라이언트 접속");
     }
 
-    @Override
-    // Client 접속 해제 시 호출
+    @Override    // Client 접속 해제 시 호출
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        log.info(session + " 클라이언트 접속 해제");
+        // 세션 리스트에서 세션 삭제
+        System.out.println(session + " 클라이언트 접속 해제");
         list.remove(session);
     }
 }

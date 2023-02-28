@@ -9,13 +9,14 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 @Configuration
-@EnableWebSocket
+@EnableWebSocket // WebSocket을 사용하기 위한 어노테이션
 public class WebSocketConfig implements WebSocketConfigurer {
 
+    // 객체 저장할 변수
     private ChartDataWebSocketHandler chartDataWebSocketHandler;
     private ChartUpdateWebSocketHandler chartUpdateWebSocketHandler;
 
-    @Autowired
+    @Autowired // 생성자를 통해 의존성 주입
     public WebSocketConfig(
             ChartDataWebSocketHandler chartDataWebSocketHandler,
             ChartUpdateWebSocketHandler chartUpdateWebSocketHandler
@@ -26,6 +27,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        // 엔드포인트 등록하고 모든 도메인에서의 연결 허용
         registry.addHandler(chartDataWebSocketHandler, "ws/chartdata").setAllowedOriginPatterns("*");
         registry.addHandler(chartUpdateWebSocketHandler, "ws/chartupdate").setAllowedOriginPatterns("*");
     }
