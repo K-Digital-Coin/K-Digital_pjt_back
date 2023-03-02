@@ -18,8 +18,8 @@ public class HistoryCoinService {
     private final HistoryCoinRepository historyCoinRepository;
 
     @Transactional(readOnly = true)
-    public HistoryCoinDTO.CoinList findAllHistoryCoins() throws CustomException {
-        List<HistoryCoin> list = historyCoinRepository.findByIdxBetween(1, 19952);
+    public HistoryCoinDTO.CoinList find100HistoryCoins() throws CustomException {
+        List<HistoryCoin> list = historyCoinRepository.findByIdxBetween(19853, 19952);
         HistoryCoinDTO.CoinList coinList = new HistoryCoinDTO.CoinList();
         coinList.setList(list.stream().map((coin) -> coin.toHistoryCoinBasicDTO()).collect(Collectors.toList()));
         return coinList;
